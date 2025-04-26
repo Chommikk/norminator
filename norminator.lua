@@ -15,7 +15,7 @@ end
 
 -- this puts spaces before and after spesific keys
 local function return_of_the_spaces(text)
-    -- First, protect important operators
+    -- Protect special operators first
     text = text:gsub("(%+%+)", "__PLUSPLUS__")
     text = text:gsub("%-%-", "__MINUSMINUS__")
     text = text:gsub("%+=", "__PLUSEQUAL__")
@@ -24,10 +24,10 @@ local function return_of_the_spaces(text)
     text = text:gsub("!=", "__NOTEQ__")
     text = text:gsub("&&", "__ANDAND__")
     text = text:gsub("||", "__OROR__")
-    
-    -- Add spaces around basic operators (only single ones)
-    text = text:gsub("([%w%)])%s*([%+%-%*/])%s*([%w%(])", "%1 %2 %3")
 
+    -- Add spaces around basic operators (+, -, /)
+    text = text:gsub("([%w%)])%s*([%+%-%/])%s*([%w%(])", "%1 %2 %3")
+	text = text:gsub("=", " = ")
     -- Restore the protected operators
     text = text:gsub("__PLUSPLUS__", "++")
     text = text:gsub("__MINUSMINUS__", "--")
@@ -40,6 +40,8 @@ local function return_of_the_spaces(text)
 
     return text
 end
+
+
 -- this puts spaces  after spesific keys
 local function return_of_the_spaces_2_electric_boogaloo(text)
 	local result = text:gsub("while","while ")
