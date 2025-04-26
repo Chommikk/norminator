@@ -6,25 +6,46 @@ local function tab_space_slayer(text)
 end
 
 
--- this puts spaces before and after spesific keys
-local function return_of_the_spaces(text)
-	local result = text:gsub("+"," + ")
-	result = text:gsub("-"," - ")
-	result = text:gsub("="," = ")
-	result = text:gsub("/"," / ")
-	result = text:gsub(" +  + "," ++ ")
-	result = text:gsub(" -  - "," -- ")
+--  getting rid of empty lines
+local function lines_begone(text)
+	local result = text:gsub(";",";\n")
+	result = result:gsub("\n\n","\n")
 	return result
 end
 
+-- this puts spaces before and after spesific keys
+local function return_of_the_spaces(text)
+    -- First, protect important operators
+    text = text:gsub("(%+%+)", "__PLUSPLUS__")
+    text = text:gsub("%-%-", "__MINUSMINUS__")
+    text = text:gsub("%+=", "__PLUSEQUAL__")
+    text = text:gsub("%-=", "__MINUSEQUAL__")
+    text = text:gsub("==", "__EQEQ__")
+    text = text:gsub("!=", "__NOTEQ__")
+    text = text:gsub("&&", "__ANDAND__")
+    text = text:gsub("||", "__OROR__")
+    
+    -- Add spaces around basic operators (only single ones)
+    text = text:gsub("([%w%)])%s*([%+%-%*/])%s*([%w%(])", "%1 %2 %3")
+
+    -- Restore the protected operators
+    text = text:gsub("__PLUSPLUS__", "++")
+    text = text:gsub("__MINUSMINUS__", "--")
+    text = text:gsub("__PLUSEQUAL__", "+=")
+    text = text:gsub("__MINUSEQUAL__", "-=")
+    text = text:gsub("__EQEQ__", "==")
+    text = text:gsub("__NOTEQ__", "!=")
+    text = text:gsub("__ANDAND__", "&&")
+    text = text:gsub("__OROR__", "||")
+
+    return text
+end
 -- this puts spaces  after spesific keys
 local function return_of_the_spaces_2_electric_boogaloo(text)
 	local result = text:gsub("while","while ")
-	result = text:gsub("if","if ")
-	result = text:gsub("else","else ")
-	result = text:gsub("return","return ")
-	result = text:gsub(" +  + "," ++ ")
-	result = text:gsub(" -  - "," -- ")
+	result = result:gsub("if","if ")
+	result = result:gsub("else","else ")
+	result = result:gsub("return","return ")
 	return result
 end
 
@@ -34,8 +55,13 @@ end
 local function norming()
 	local lines = vim.api.nvim_buf_get_lines(0,0,-1,false)
 	local text = table.concat(lines,"\n") .."\n"
+	
 	--removing tabs and spaces
 	text = tab_space_slayer(text)
+	
+	--removing empty lines
+	text = lines_begone(text)
+	
 	--adding spaces 
 	text = return_of_the_spaces(text)
 	
@@ -62,4 +88,4 @@ end
 
 
 -- keymaping currently to f2
-vim.keymap.set('n','<F2>',norming,{noremap = true, silent = true})
+vim.keymap.set('n','<F3>',norming,{noremap = true, silent = true})
